@@ -1,8 +1,8 @@
-import { ShortLogo } from "@/src/components/brand";
-import { Button } from "@/src/components/ui/button";
-import { Separator } from "@/src/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import LoginSection from "./components/login-section";
 import LoginHero from "./components/login-hero";
+import { ShortLogo } from "@/components/brand";
 
 export default function Page() {
     return (
@@ -16,8 +16,8 @@ export default function Page() {
                 </div>
                 <Separator />
                 <div className="w-full flex-1 flex items-center px-6">
-                    {/* <LoginSection /> */}
-                    {/* <LoginHero /> */}
+                    <LoginSection />
+                    <LoginHero />
                 </div>
             </div>
         </div>

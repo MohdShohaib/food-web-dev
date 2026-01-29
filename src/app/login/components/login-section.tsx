@@ -1,29 +1,49 @@
 "use client";
 
-import { Icon } from "@/src/components/icons";
-import { Button } from "@/src/components/ui/button";
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupInput,
-} from "@/src/components/ui/input-group";
-import { Eye } from "lucide-react";
-import { Checkbox } from "@/src/components/ui/checkbox";
-import { Label } from "@/src/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff, KeyRound, UserRound } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 // import { LoginOtpSendModal } from "../../modals";
-import { FormControl, FormField, FormItem, Form } from "@/src/components/ui/form";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+import { Input } from "@/components/ui/input";
+import { setAuth } from "@/redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+
+const LoginFormSchema = z.object({
+	email: z.email({ message: "Please provide a valid email address" }),
+	password: z
+		.string()
+		.min(8, { message: "Password must be at least 8 characters long" })
+		.max(20, {
+			message: "Password must be at most 20 characters long",
+		}),
+});
+
 
 const LoginSection = () => {
-	const {
-		isPasswordVisible,
-		onTogglePasswordVisibility,
-		isRememberMeChecked,
-		onToggleRememberMe,
-		isLoginOtpSendModalOpen,
-		onToggleLoginOtpSendModal,
-		loginForm,
-		onLoginClick,
-	} = useLoginSection();
+	const dispatch = useDispatch();
+	const router = useRouter();
+
+	const [isRememberMeChecked, setIsRememberMeChecked] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+	const { register, handleSubmit, formState: { errors, isValid } } = useForm<z.infer<typeof LoginFormSchema>>({
+		resolver: zodResolver(LoginFormSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+	});
+
+	const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = async (data) => {
+		// Handle login logic here
+		dispatch(setAuth({ user: { id: "1234567890", name: "John Doe", phone: "1234567890", email: data.email, role: "superAdmin", } }));
+		router.replace("/dashboard");
+	};
 
 	return (
 		<div className="flex-1 flex flex-col items-center justify-center">
@@ -32,101 +52,74 @@ const LoginSection = () => {
 				<p className="text-lg">
 					Enter your registered details to access your account.
 				</p>
-				<Form {...loginForm}>
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							onLoginClick();
-						}}
-						className="w-full flex flex-col gap-3"
-					>
-						<FormField
-							control={loginForm.control}
-							name="email"
-							render={({ field }) => (
-								<FormItem>
-									<FormControl>
-										<InputGroup className="h-11 mt-2">
-											<InputGroupInput
-												placeholder="Email ID"
-												className="text-base placeholder:text-base"
-												{...field}
-											/>
-											<InputGroupAddon>
-												<Icon name="user" />
-											</InputGroupAddon>
-										</InputGroup>
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={loginForm.control}
-							name="password"
-							render={({ field }) => (
-								<FormItem>
-									<FormControl>
-										<InputGroup className="h-11">
-											<InputGroupInput
-												placeholder="Password"
-												className="text-base placeholder:text-base"
-												type={
-													isPasswordVisible
-														? "text"
-														: "password"
-												}
-												{...field}
-											/>
-											<InputGroupAddon>
-												<Icon name="key" />
-											</InputGroupAddon>
-											<InputGroupAddon align="inline-end">
-												<Button
-													appearance="ghost"
-													variant="neutral"
-													className="hover:bg-transparent active:bg-transparent"
-													onClick={
-														onTogglePasswordVisibility
-													}
-												>
-													<Eye className="text-primary" />
-												</Button>
-											</InputGroupAddon>
-										</InputGroup>
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-
-						<div className="w-full flex items-center justify-between">
-							<div className="flex gap-1">
-								<Checkbox
-									className="h-5 w-5"
-									checked={isRememberMeChecked}
-									onCheckedChange={onToggleRememberMe}
-								/>
-								<Label className="ml-1">Remember me</Label>
-							</div>
-
-							<Button
-								appearance="ghost"
-								variant="neutral"
-								className="text-base p-0 hover:bg-transparent active:bg-transparent"
-								type="submit"
-							>
-								<p>FORGOT PASSWORD</p>
-							</Button>
+				<form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col gap-3">
+					<div className="relative mt-2">
+						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+							<UserRound size={18} className="text-gray-500 dark:text-gray-400" />
 						</div>
-						<Button
-							className="mt-2 text-base"
-							size="lg"
-							disabled={!loginForm.formState.isValid}
-							type="submit"
+						<Input
+							id="email"
+							type="email"
+							autoComplete="email"
+							required
+							className="w-full px-10 h-11 placeholder:text-base"
+							placeholder="Email ID"
+							{...register("email", { required: true })}
+						/>
+					</div>
+					<div className="relative">
+						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+							<KeyRound size={18} className="text-gray-500 dark:text-gray-400" />
+						</div>
+						<Input
+							id="password"
+							type={showPassword ? "text" : "password"}
+							autoComplete="current-password"
+							required
+							className="w-full px-10 h-11 placeholder:text-base"
+							placeholder="Password"
+							{...register("password", { required: true })}
+						/>
+						<button
+							type="button"
+							className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+							onClick={() => setShowPassword(!showPassword)}
 						>
-							<p>CONTINUE</p>
+							{showPassword ? (
+								<EyeOff size={18} className="text-gray-500 dark:text-gray-400" />
+							) : (
+								<Eye size={18} className="text-gray-500 dark:text-gray-400" />
+							)}
+						</button>
+					</div>
+
+					<div className="w-full flex items-center justify-between">
+						<div className="flex gap-1">
+							<Checkbox
+								className="h-5 w-5"
+								checked={isRememberMeChecked}
+							// onCheckedChange={(setIsRememberMeChecked)}
+							/>
+							<Label className="ml-1">Remember me</Label>
+						</div>
+
+						<Button
+							appearance="ghost"
+							variant="neutral"
+							className="text-base p-0 hover:bg-transparent active:bg-transparent"
+						>
+							<p>FORGOT PASSWORD</p>
 						</Button>
-					</form>
-				</Form>
+					</div>
+					<Button
+						className="mt-2 text-base"
+						size="lg"
+						disabled={!isValid}
+						type="submit"
+					>
+						<p>CONTINUE</p>
+					</Button>
+				</form>
 
 				<p className="w-full flex items-center justify-center text-center">
 					or
@@ -136,7 +129,7 @@ const LoginSection = () => {
 					appearance="outlined"
 					size="lg"
 					className="text-base"
-					onClick={onToggleLoginOtpSendModal}
+				// onClick={onToggleLoginOtpSendModal}
 				>
 					<p>LOGIN USING OTP</p>
 				</Button>
@@ -163,7 +156,7 @@ const LoginSection = () => {
 					</Button>
 				</div>
 			</div>
-		</div>
+		</div >
 	);
 };
 

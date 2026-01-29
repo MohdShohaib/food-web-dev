@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import {
 	iconsRegistry,
 	type IconName,

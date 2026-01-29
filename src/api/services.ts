@@ -31,21 +31,3 @@ export const userService = {
   getUserById: (id: string) =>
     apiClient.get(`/users/${id}`),
 };
-
-// Products endpoints (example)
-export const productService = {
-  getAllProducts: (params?: Record<string, any>) =>
-    apiClient.get('/products', { params }),
-  
-  getProductById: (id: string) =>
-    apiClient.get(`/products/${id}`),
-  
-  createProduct: (data: Record<string, any>) =>
-    apiClient.post('/products', data),
-  
-  updateProduct: (id: string, data: Record<string, any>) =>
-    apiClient.put(`/products/${id}`, data),
-  
-  deleteProduct: (id: string) =>
-    apiClient.delete(`/products/${id}`),
-};

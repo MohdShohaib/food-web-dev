@@ -9,7 +9,6 @@ export interface User {
   phone: string;
   role: 'owner' | 'staff' | 'member' | 'admin' | 'superAdmin';
   avatar?: string;
-  gymId?: string;
 }
 
 export interface AuthState {
