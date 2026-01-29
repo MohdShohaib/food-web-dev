@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   AlertTriangle,
   CheckCircle,
   Search,
   Filter,
   ChevronDown,
+  Check,
 } from 'lucide-react'
 type NotificationType = 'warning' | 'success' | 'error' | 'info'
 type Notification = {
@@ -14,9 +15,22 @@ type Notification = {
   description: string
   timestamp: string
   selected: boolean
+  read: boolean
 }
 type NotificationsPageProps = {
-  onBack: () => void
+  onBack?: () => void
+}
+
+type FilterOptions = {
+  types: {
+    severe: boolean
+    success: boolean
+    warning: boolean
+  }
+  status: {
+    read: boolean
+    unread: boolean
+  }
 }
 export function NotificationsPage({ onBack }: NotificationsPageProps) {
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -28,6 +42,7 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
         'The battery for [Box name] [Box ID] seems to be draining. Charge the device before you head outdoor.',
       timestamp: '12:15 PM | Today',
       selected: false,
+      read: true,
     },
     {
       id: '2',
@@ -37,6 +52,7 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
         'It seems the camera for [Box name] [Box ID] is not functioning properly. Try restarting the device once.',
       timestamp: '12:15 PM | Today',
       selected: false,
+      read: false,
     },
     {
       id: '3',
@@ -46,6 +62,7 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
         'You successfully opened the Grublock for [Box name] [Box ID].',
       timestamp: '12:15 PM | Today',
       selected: false,
+      read: true,
     },
     {
       id: '4',
@@ -55,12 +72,42 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
         'The battery for [Box name] [Box ID] seems to be draining. Charge the device before you head outdoor.',
       timestamp: '12:15 PM | Today',
       selected: false,
+      read: false,
     },
   ])
   const [selectAll, setSelectAll] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [relevanceFilter, setRelevanceFilter] = useState('')
   const [boxFilter, setBoxFilter] = useState('')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    types: {
+      severe: true,
+      success: false,
+      warning: false,
+    },
+    status: {
+      read: true,
+      unread: false,
+    },
+  })
+  const filterButtonRef = useRef<HTMLButtonElement>(null)
+  const filterDropdownRef = useRef<HTMLDivElement>(null)
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(event.target as Node) &&
+        filterButtonRef.current &&
+        !filterButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsFilterOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
   const handleSelectAll = () => {
     const newSelectAll = !selectAll
     setSelectAll(newSelectAll)
@@ -88,6 +135,31 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
   }
   const handleDismissAll = () => {
     setNotifications([])
+  }
+  const handleTypeFilterChange = (type: keyof FilterOptions['types']) => {
+    setFilterOptions((prev) => ({
+      ...prev,
+      types: {
+        ...prev.types,
+        [type]: !prev.types[type],
+      },
+    }))
+  }
+  const handleStatusFilterChange = (status: keyof FilterOptions['status']) => {
+    setFilterOptions((prev) => ({
+      ...prev,
+      status: {
+        ...prev.status,
+        [status]: !prev.status[status],
+      },
+    }))
+  }
+  const handleCancelFilter = () => {
+    setIsFilterOpen(false)
+  }
+  const handleApplyFilter = () => {
+    // Apply filter logic here
+    setIsFilterOpen(false)
   }
   const getNotificationStyles = (type: NotificationType) => {
     switch (type) {
@@ -117,6 +189,37 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
         }
     }
   }
+  // Custom checkbox component
+  const CustomCheckbox = ({
+    checked,
+    onChange,
+    label,
+    filled = false,
+  }: {
+    checked: boolean
+    onChange: () => void
+    label: string
+    filled?: boolean
+  }) => (
+    <label className="flex items-center gap-2 cursor-pointer group">
+      <div
+        onClick={onChange}
+        className={`
+          w-4 h-4 rounded border-2 flex items-center justify-center transition-all
+          ${checked ? (filled ? 'bg-[#FF5722] border-[#FF5722]' : 'border-[#FF5722] bg-white') : 'border-gray-300 bg-white'}
+        `}
+      >
+        {checked && (
+          <Check
+            size={12}
+            className={filled ? 'text-white' : 'text-[#FF5722]'}
+            strokeWidth={3}
+          />
+        )}
+      </div>
+      <span className="text-sm text-gray-700">{label}</span>
+    </label>
+  )
   return (
     <div className="flex-1 bg-white">
       {/* Header */}
@@ -147,17 +250,17 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
           />
         </div>
 
-        {/* Relevance Filter */}
+        {/* Restaurant Filter */}
         <div className="relative">
           <select
             value={relevanceFilter}
             onChange={(e) => setRelevanceFilter(e.target.value)}
             className="appearance-none pl-4 pr-10 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-white cursor-pointer"
           >
-            <option value="">Select relevance</option>
-            <option value="high">High Priority</option>
-            <option value="medium">Medium Priority</option>
-            <option value="low">Low Priority</option>
+            <option value="">Select restaurant</option>
+            <option value="rest1">Restaurant A</option>
+            <option value="rest2">Restaurant B</option>
+            <option value="rest3">Restaurant C</option>
           </select>
           <ChevronDown
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -183,11 +286,91 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
           />
         </div>
 
-        {/* Filter Button */}
-        <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-          <Filter size={16} />
-          FILTER
-        </button>
+        {/* Filter Button with Dropdown */}
+        <div className="relative">
+          <button
+            ref={filterButtonRef}
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className={`
+              flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors
+              ${isFilterOpen ? 'border-[#FF5722] text-[#FF5722] bg-orange-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}
+            `}
+          >
+            <Filter size={16} />
+            FILTER
+          </button>
+
+          {/* Filter Dropdown */}
+          {isFilterOpen && (
+            <div
+              ref={filterDropdownRef}
+              className="absolute top-full right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+            >
+              <div className="p-4">
+                {/* Type Section */}
+                <div className="mb-4">
+                  <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                    Type
+                  </h4>
+                  <div className="flex items-center gap-6">
+                    <CustomCheckbox
+                      checked={filterOptions.types.severe}
+                      onChange={() => handleTypeFilterChange('severe')}
+                      label="Severe"
+                      filled={true}
+                    />
+                    <CustomCheckbox
+                      checked={filterOptions.types.success}
+                      onChange={() => handleTypeFilterChange('success')}
+                      label="Success"
+                    />
+                    <CustomCheckbox
+                      checked={filterOptions.types.warning}
+                      onChange={() => handleTypeFilterChange('warning')}
+                      label="Warning"
+                    />
+                  </div>
+                </div>
+
+                {/* Status Section */}
+                <div className="mb-4">
+                  <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
+                    Status
+                  </h4>
+                  <div className="flex items-center gap-6">
+                    <CustomCheckbox
+                      checked={filterOptions.status.read}
+                      onChange={() => handleStatusFilterChange('read')}
+                      label="Read"
+                    />
+                    <CustomCheckbox
+                      checked={filterOptions.status.unread}
+                      onChange={() => handleStatusFilterChange('unread')}
+                      label="Unread"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+                <button
+                  onClick={handleCancelFilter}
+                  className="text-sm font-medium text-gray-500 hover:text-gray-700 uppercase tracking-wide transition-colors"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={handleApplyFilter}
+                  className="flex items-center gap-2 px-4 py-2 border border-[#FF5722] text-[#FF5722] rounded-lg text-sm font-medium hover:bg-orange-50 transition-colors"
+                >
+                  <Check size={16} />
+                  FILTER NOTIFICATIONS
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Notifications List */}
