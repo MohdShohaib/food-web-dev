@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter  } from "next/navigation";
 import {
   LayoutDashboard,
   Globe,
@@ -31,7 +31,7 @@ export default function ProtectedLayout({
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-
+const router = useRouter();
   const navItems: NavItem[] = [
     { label: "DASHBOARD", icon: LayoutDashboard, href: "/dashboard" },
     { label: "RESTAURANTS", icon: Globe, href: "/restaurants" },
@@ -134,7 +134,10 @@ export default function ProtectedLayout({
       <NotificationsPanel
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
-        onViewAll={() => setIsNotificationsOpen(false)}
+         onViewAll={() => {
+    setIsNotificationsOpen(false);
+    router.push("/notifications"); // ✅ THIS WAS MISSING
+  }}
       />
     </div>
   );

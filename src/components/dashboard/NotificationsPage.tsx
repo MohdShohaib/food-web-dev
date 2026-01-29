@@ -18,8 +18,9 @@ type Notification = {
   read: boolean
 }
 type NotificationsPageProps = {
-  onBack: () => void
+  onBack?: () => void
 }
+
 type FilterOptions = {
   types: {
     severe: boolean
