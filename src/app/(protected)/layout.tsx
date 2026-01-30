@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -15,6 +15,7 @@ import {
   Bell,
 } from "lucide-react";
 import { NotificationsPanel } from "@/components/dashboard/NotificationsPanel";
+import { useSelector } from "react-redux";
 
 type NavItem = {
   label: string;
@@ -23,20 +24,12 @@ type NavItem = {
   color?: string;
 };
 
-// useEffect(() => {
-//     if (!isAuthenticated) {
-//         router.replace('/login');
-//     }
-// }, [isAuthenticated, router]);
-
-// if (!isAuthenticated) {
-//     return null; // Prevent flash of wrong content
-// }
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isAuthenticated } = useSelector((state: any) => state.auth);
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -58,6 +51,16 @@ export default function ProtectedLayout({
     { label: "SYSTEM LOGS", icon: FileText, href: "/system-logs" },
     { label: "HELP", icon: HelpCircle, href: "/help" },
   ];
+
+  useEffect(() => {
+      if (!isAuthenticated) {
+          router.replace('/login');
+      }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+      return null; // Prevent flash of wrong content
+  }
 
   const isActive = (href: string) => pathname === href;
 

@@ -123,9 +123,9 @@ export function NotificationsPage({ onBack }: NotificationsPageProps) {
       notifications.map((n) =>
         n.id === id
           ? {
-              ...n,
-              selected: !n.selected,
-            }
+            ...n,
+            selected: !n.selected,
+          }
           : n,
       ),
     )

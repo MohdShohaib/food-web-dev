@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "../redux/provider";
 // import { SidebarProvider } from "../components/ui/sidebar";
+import { ToastContainer } from "react-toastify";
 
 
 const inter = Inter({
@@ -25,9 +26,10 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased`}
       >
+        <ToastContainer />
         <ReduxProvider>
           {/* <SidebarProvider> */}
-            {children}
+          {children}
           {/* </SidebarProvider> */}
         </ReduxProvider>
       </body>

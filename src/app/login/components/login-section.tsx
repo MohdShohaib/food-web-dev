@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { setAuth } from "@/redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const LoginFormSchema = z.object({
 	email: z.email({ message: "Please provide a valid email address" }),
@@ -43,6 +44,7 @@ const LoginSection = () => {
 		// Handle login logic here
 		dispatch(setAuth({ user: { id: "1234567890", name: "John Doe", phone: "1234567890", email: data.email, role: "superAdmin", } }));
 		router.replace("/dashboard");
+		toast.success("Logged in successfully!");
 	};
 
 	return (
