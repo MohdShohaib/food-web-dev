@@ -17,8 +17,8 @@ import {
   questions,
   CategoryId,
   Question,
-} from "@/src/data/helpData";
-import type { HelpScreen } from "@/src/data/helpData";
+} from "@/data/helpData";
+import type { HelpScreen } from "@/data/helpData";
 
  export default function HelpPage() {
   const [currentScreen, setCurrentScreen] = useState<HelpScreen>('home')
