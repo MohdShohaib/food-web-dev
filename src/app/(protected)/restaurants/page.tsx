@@ -764,116 +764,141 @@ export default function RestaurantsPage() {
       </div>
 
       {/* Content Sections */}
-      <div
-        className={`flex-1 overflow-y-auto p-6 ${selectedIds.length > 0 ? 'pb-24' : ''}`}
-      >
-        {/* Restaurants with boxes */}
-        <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden shadow-sm">
-          <button
-            onClick={() => toggleSection('withBoxes')}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100"
-          >
-            <span className="text-sm font-medium text-slate-700">
-              Restaurants with boxes
-            </span>
-            <div className="flex items-center gap-3">
-              {filteredWithBoxes.length > 0 && (
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span>1-{Math.min(50, filteredWithBoxes.length)}</span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      className="p-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-40"
-                      disabled
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ChevronLeft size={12} />
-                    </button>
-                    <button
-                      className="p-1 border border-gray-200 rounded hover:bg-gray-100"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ChevronRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              )}
-              {expandedSection === 'withBoxes' ? (
-                <ChevronUp size={16} className="text-gray-400" />
-              ) : (
-                <ChevronDown size={16} className="text-gray-400" />
-              )}
-            </div>
-          </button>
-          {expandedSection === 'withBoxes' && filteredWithBoxes.length > 0 && (
-            <div>
-              {renderTableHeader(filteredWithBoxes)}
-              {filteredWithBoxes.map(renderTableRow)}
-            </div>
-          )}
-          {expandedSection === 'withBoxes' &&
-            filteredWithBoxes.length === 0 && (
-              <div className="p-6 bg-white">
-                <p className="text-sm text-gray-400">
-                  Assign boxes to your restaurants to see the list here.
-                </p>
-              </div>
-            )}
-        </div>
+    <div
+  className={`flex-1 overflow-y-auto p-6 ${
+    selectedIds.length > 0 ? 'pb-24' : ''
+  }`}
+>
+  {/* Restaurants with boxes */}
+  <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden shadow-sm">
+    {/* ✅ OUTER DIV (NOT BUTTON) */}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => toggleSection('withBoxes')}
+      className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100 cursor-pointer"
+    >
+      <span className="text-sm font-medium text-slate-700">
+        Restaurants with boxes
+      </span>
 
-        {/* Restaurants without boxes */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-          <button
-            onClick={() => toggleSection('withoutBoxes')}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100"
-          >
-            <span className="text-sm font-medium text-slate-700">
-              Restaurants without boxes
-            </span>
-            <div className="flex items-center gap-3">
-              {filteredWithoutBoxes.length > 0 && (
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span>1-{Math.min(50, filteredWithoutBoxes.length)}</span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      className="p-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-40"
-                      disabled
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ChevronLeft size={12} />
-                    </button>
-                    <button
-                      className="p-1 border border-gray-200 rounded hover:bg-gray-100"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ChevronRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              )}
-              {expandedSection === 'withoutBoxes' ? (
-                <ChevronUp size={16} className="text-gray-400" />
-              ) : (
-                <ChevronDown size={16} className="text-gray-400" />
-              )}
+      <div className="flex items-center gap-3">
+        {filteredWithBoxes.length > 0 && (
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span>1-{Math.min(50, filteredWithBoxes.length)}</span>
+
+            <div className="flex items-center gap-1">
+              {/* ✅ INNER BUTTONS OK */}
+              <button
+                type="button"
+                disabled
+                onClick={(e) => e.stopPropagation()}
+                className="p-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-40"
+              >
+                <ChevronLeft size={12} />
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="p-1 border border-gray-200 rounded hover:bg-gray-100"
+              >
+                <ChevronRight size={12} />
+              </button>
             </div>
-          </button>
-          {expandedSection === 'withoutBoxes' &&
-            filteredWithoutBoxes.length > 0 && (
-              <div>
-                {renderTableHeader(filteredWithoutBoxes)}
-                {filteredWithoutBoxes.map(renderTableRow)}
-              </div>
-            )}
-          {expandedSection === 'withoutBoxes' &&
-            filteredWithoutBoxes.length === 0 && (
-              <div className="p-6 bg-white">
-                <p className="text-sm text-gray-400">
-                  No restaurants without boxes.
-                </p>
-              </div>
-            )}
-        </div>
+          </div>
+        )}
+
+        {expandedSection === 'withBoxes' ? (
+          <ChevronUp size={16} className="text-gray-400" />
+        ) : (
+          <ChevronDown size={16} className="text-gray-400" />
+        )}
       </div>
+    </div>
+
+    {expandedSection === 'withBoxes' && filteredWithBoxes.length > 0 && (
+      <div>
+        {renderTableHeader(filteredWithBoxes)}
+        {filteredWithBoxes.map(renderTableRow)}
+      </div>
+    )}
+
+    {expandedSection === 'withBoxes' &&
+      filteredWithBoxes.length === 0 && (
+        <div className="p-6 bg-white">
+          <p className="text-sm text-gray-400">
+            Assign boxes to your restaurants to see the list here.
+          </p>
+        </div>
+      )}
+  </div>
+
+  {/* Restaurants without boxes */}
+  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+    {/* ✅ OUTER DIV (NOT BUTTON) */}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => toggleSection('withoutBoxes')}
+      className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-gray-100 cursor-pointer"
+    >
+      <span className="text-sm font-medium text-slate-700">
+        Restaurants without boxes
+      </span>
+
+      <div className="flex items-center gap-3">
+        {filteredWithoutBoxes.length > 0 && (
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span>1-{Math.min(50, filteredWithoutBoxes.length)}</span>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled
+                onClick={(e) => e.stopPropagation()}
+                className="p-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-40"
+              >
+                <ChevronLeft size={12} />
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="p-1 border border-gray-200 rounded hover:bg-gray-100"
+              >
+                <ChevronRight size={12} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {expandedSection === 'withoutBoxes' ? (
+          <ChevronUp size={16} className="text-gray-400" />
+        ) : (
+          <ChevronDown size={16} className="text-gray-400" />
+        )}
+      </div>
+    </div>
+
+    {expandedSection === 'withoutBoxes' &&
+      filteredWithoutBoxes.length > 0 && (
+        <div>
+          {renderTableHeader(filteredWithoutBoxes)}
+          {filteredWithoutBoxes.map(renderTableRow)}
+        </div>
+      )}
+
+    {expandedSection === 'withoutBoxes' &&
+      filteredWithoutBoxes.length === 0 && (
+        <div className="p-6 bg-white">
+          <p className="text-sm text-gray-400">
+            No restaurants without boxes.
+          </p>
+        </div>
+      )}
+  </div>
+</div>
 
       {/* Selection Action Bar */}
       <SelectionActionBar
